@@ -1,9 +1,8 @@
 import "./App.css";
 import TodoForm from "./features/TodoForm.jsx";
 import TodoList from "./features/todolist/TodoList.jsx";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import TodosViewForm from "./features/TodosViewForm.jsx";
-import React, { useCallback } from "react";
 
 const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${
   import.meta.env.VITE_TABLE_NAME
@@ -51,13 +50,10 @@ function App() {
       setErrorMessage("");
 
       try {
-        const resp = await fetch(
-          encodeUrl({ sortField, sortDirection, queryString }),
-          {
-            method: "GET",
-            headers: { Authorization: token },
-          }
-        );
+        const resp = await fetch(encodeUrl(), {
+          method: "GET",
+          headers: { Authorization: token },
+        });
         if (!resp.ok)
           throw new Error(`Failed to fetch todos: ${resp.statusText}`);
 
@@ -79,7 +75,7 @@ function App() {
     };
 
     fetchTodos();
-  }, [sortField, sortDirection, queryString]);
+  }, [encodeUrl]);
 
   // Add new todo
   const handleAddTodo = async (title) => {
