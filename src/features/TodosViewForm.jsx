@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function TodosViewForm({
   sortField,
@@ -10,6 +10,23 @@ function TodosViewForm({
 }) {
   const preventRefresh = (e) => e.preventDefault();
 
+  const [localQueryString, setLocalQueryString] = useState(queryString);
+
+  useEffect(() => {
+    const debounce = setTimeout(() => {
+      setQueryString(localQueryString);
+    }, 500);
+
+    return () => {
+      clearTimeout(debounce);
+    };
+  }, [localQueryString, setQueryString]);
+
+  const handleClear = () => {
+    setLocalQueryString("");
+    setQueryString("");
+  };
+
   return (
     <form onSubmit={preventRefresh}>
       <div className="todos-search">
@@ -17,16 +34,15 @@ function TodosViewForm({
         <input
           type="text"
           id="search-todos"
-          value={queryString}
-          onChange={(e) => setQueryString(e.target.value)}
+          value={localQueryString}
+          onChange={(e) => setLocalQueryString(e.target.value)}
         />
-        <button type="button" onClick={() => setQueryString("")}>
+        <button type="button" onClick={handleClear}>
           Clear
         </button>
       </div>
 
       <div className="todos-view-form">
-        {/* Sort Field */}
         <label htmlFor="sort-field">Sort by: </label>
         <select
           id="sort-field"
@@ -37,7 +53,6 @@ function TodosViewForm({
           <option value="createdTime">Time added</option>
         </select>
 
-        {/* Sort Direction */}
         <label htmlFor="sort-direction" style={{ marginLeft: "1rem" }}>
           Direction:{" "}
         </label>
