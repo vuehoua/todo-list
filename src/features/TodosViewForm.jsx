@@ -1,4 +1,24 @@
 import { useState } from "react";
+import Button from "../components/Button/Button.jsx";
+import Input from "../components/Input/Input.jsx";
+import styled from "styled-components";
+
+const StyledForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
+
+const StyledDiv = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+`;
+
+const StyledButton = styled.button`
+  padding: 0.5rem;
+`;
 
 function TodosViewForm({
   sortField,
@@ -11,21 +31,21 @@ function TodosViewForm({
   const preventRefresh = (e) => e.preventDefault();
 
   return (
-    <form onSubmit={preventRefresh}>
-      <div className="todos-search">
+    <StyledForm onSubmit={preventRefresh}>
+      <StyledDiv className="todos-search">
         <label htmlFor="search-todos">Search todos: </label>
-        <input
+        <Input
           type="text"
           id="search-todos"
           value={queryString}
           onChange={(e) => setQueryString(e.target.value)}
         />
-        <button type="button" onClick={() => setQueryString("")}>
+        <StyledButton type="button" onClick={() => setQueryString("")}>
           Clear
-        </button>
-      </div>
+        </StyledButton>
+      </StyledDiv>
 
-      <div className="todos-view-form">
+      <StyledDiv className="todos-view-form">
         {/* Sort Field */}
         <label htmlFor="sort-field">Sort by: </label>
         <select
@@ -49,8 +69,8 @@ function TodosViewForm({
           <option value="asc">Ascending</option>
           <option value="desc">Descending</option>
         </select>
-      </div>
-    </form>
+      </StyledDiv>
+    </StyledForm>
   );
 }
 

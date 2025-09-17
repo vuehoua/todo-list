@@ -1,0 +1,9 @@
+input[type="text"] {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-bottom: 1px solid #5c75b0;
+}
+
+input[type="text"]:focus {
+  outline: none;
+}
