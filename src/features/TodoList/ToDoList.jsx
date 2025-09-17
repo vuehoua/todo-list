@@ -1,3 +1,4 @@
+import styles from "./TodoList.module.css";
 import TodoListItem from "./TodoListItem";
 
 function TodoList({ todos, onCompleteTodo, onUpdateTodo, isLoading }) {
@@ -6,16 +7,14 @@ function TodoList({ todos, onCompleteTodo, onUpdateTodo, isLoading }) {
   if (!todos || todos.length === 0) return <p>No todos found</p>;
 
   return (
-    <ul>
+    <ul className={styles.todoList}>
       {todos.map((todo) => (
-        <li key={todo.id}>
-          <input
-            type="checkbox"
-            checked={todo.fields?.isCompleted || false}
-            onChange={() => onCompleteTodo(todo.id)}
-          />
-          <span>{todo.fields?.title || "Untitled"}</span>
-        </li>
+        <TodoListItem
+          key={todo.id}
+          todo={todo}
+          onCompleteTodo={onCompleteTodo}
+          onUpdateTodo={onUpdateTodo}
+        />
       ))}
     </ul>
   );
