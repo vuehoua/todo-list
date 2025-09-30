@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Button from "../components/Button/Button.jsx";
 import Input from "../components/Input/Input.jsx";
 import styled from "styled-components";
@@ -20,6 +20,8 @@ const StyledButton = styled.button`
   padding: 0.5rem;
 `;
 
+
+
 function TodosViewForm({
   sortField,
   setSortField,
@@ -30,6 +32,23 @@ function TodosViewForm({
 }) {
   const preventRefresh = (e) => e.preventDefault();
 
+  const [localQueryString, setLocalQueryString] = useState(queryString);
+
+  useEffect(() => {
+    const debounce = setTimeout(() => {
+      setQueryString(localQueryString);
+    }, 500);
+
+    return () => {
+      clearTimeout(debounce);
+    };
+  }, [localQueryString, setQueryString]);
+
+  const handleClear = () => {
+    setLocalQueryString("");
+    setQueryString("");
+  };
+
   return (
     <StyledForm onSubmit={preventRefresh}>
       <StyledDiv className="todos-search">
@@ -37,16 +56,22 @@ function TodosViewForm({
         <Input
           type="text"
           id="search-todos"
-          value={queryString}
-          onChange={(e) => setQueryString(e.target.value)}
+          value={localQueryString}
+          onChange={(e) => setLocalQueryString(e.target.value)}
         />
+
         <StyledButton type="button" onClick={() => setQueryString("")}>
+
+        <button type="button" onClick={handleClear}>
+
           Clear
         </StyledButton>
       </StyledDiv>
 
       <StyledDiv className="todos-view-form">
-        {/* Sort Field */}
+
+      <div className="todos-view-form">
+
         <label htmlFor="sort-field">Sort by: </label>
         <select
           id="sort-field"
@@ -57,7 +82,6 @@ function TodosViewForm({
           <option value="createdTime">Time added</option>
         </select>
 
-        {/* Sort Direction */}
         <label htmlFor="sort-direction" style={{ marginLeft: "1rem" }}>
           Direction:{" "}
         </label>

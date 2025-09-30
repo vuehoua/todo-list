@@ -1,8 +1,8 @@
 import "./App.css";
 import TodoForm from "./features/TodoForm.jsx";
 import TodoList from "./features/todolist/TodoList.jsx";
+import { useState, useEffect, useCallback } from "react";
 import TodosViewForm from "./features/TodosViewForm.jsx";
-import { useState, useEffect } from "react";
 import styles from "./App.module.css";
 
 const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${
@@ -10,15 +10,8 @@ const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${
 }`;
 const token = `Bearer ${import.meta.env.VITE_PAT}`;
 
-const encodeUrl = ({ sortField, sortDirection, queryString }) => {
-  let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
-  let searchQuery = "";
-  if (queryString) {
-    searchQuery = `&filterByFormula=SEARCH("${queryString}",+title)`;
-  }
-
-  return encodeURI(`${url}?${sortQuery}${searchQuery}`);
-};
+//   return encodeURI(`${url}?${sortQuery}${searchQuery}`);
+// };
 
 // const encodeUrl = ({ sortField, sortDirection }) => {
 //   let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
@@ -34,6 +27,23 @@ function App() {
   const [sortDirection, setSortDirection] = useState("desc");
   const [queryString, setQueryString] = useState("");
 
+  // const encodeUrl = ({ sortField, sortDirection, queryString }) => {
+  //   let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
+  //   let searchQuery = "";
+  //   if (queryString) {
+  //     searchQuery = `&filterByFormula=SEARCH("${queryString}",+title)`;
+  //   }
+
+  const encodeUrl = useCallback(() => {
+    let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
+    let searchQuery = "";
+    if (queryString) {
+      searchQuery = `&filterByFormula=SEARCH("${queryString}",+title)`;
+    }
+
+    return encodeURI(`${url}?${sortQuery}${searchQuery}`);
+  }, [sortField, sortDirection, queryString]);
+
   // Load todos from Airtable
   useEffect(() => {
     const fetchTodos = async () => {
@@ -41,13 +51,10 @@ function App() {
       setErrorMessage("");
 
       try {
-        const resp = await fetch(
-          encodeUrl({ sortField, sortDirection, queryString }),
-          {
-            method: "GET",
-            headers: { Authorization: token },
-          }
-        );
+        const resp = await fetch(encodeUrl(), {
+          method: "GET",
+          headers: { Authorization: token },
+        });
         if (!resp.ok)
           throw new Error(`Failed to fetch todos: ${resp.statusText}`);
 
@@ -69,7 +76,7 @@ function App() {
     };
 
     fetchTodos();
-  }, [sortField, sortDirection, queryString]);
+  }, [encodeUrl]);
 
   // Add new todo
   const handleAddTodo = async (title) => {
