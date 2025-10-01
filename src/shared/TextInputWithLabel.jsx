@@ -25,7 +25,7 @@ function TextInputWithLabel({
         type="text"
         id={elementId}
         ref={inputRef}
-        value={value}
+        value={value ?? ""}
         onChange={onChange}
       />
     </>
