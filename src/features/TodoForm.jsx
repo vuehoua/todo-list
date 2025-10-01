@@ -25,6 +25,8 @@ function TodoForm({ onAddTodo, isSaving }) {
     <form onSubmit={handleSubmit}>
       <Input
         type="text"
+        id="todoTitle"
+        name="todoTitle"
         placeholder="Enter todo..."
         value={workingTodoTitle}
         onChange={(e) => setWorkingTodoTitle(e.target.value)}
