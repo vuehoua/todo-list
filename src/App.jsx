@@ -1,43 +1,32 @@
+import { Routes, Route, useLocation } from "react-router-dom";
 import "./App.css";
-import TodoForm from "./features/TodoForm.jsx";
-import TodoList from "./features/todolist/TodoList.jsx";
 import { useState, useEffect, useCallback, useReducer } from "react";
-import TodosViewForm from "./features/TodosViewForm.jsx";
-import styles from "./App.module.css";
 import todosReducer, {
   initialState as initialTodosState,
 } from "./reducers/todos.reducer";
+import TodosPage from "./pages/TodosPage.jsx";
+import Header from "./shared/Header.jsx";
+import About from "./pages/About.jsx";
+import NotFound from "./pages/NotFound.jsx";
 
 const url = `https://api.airtable.com/v0/${import.meta.env.VITE_BASE_ID}/${
   import.meta.env.VITE_TABLE_NAME
 }`;
 const token = `Bearer ${import.meta.env.VITE_PAT}`;
 
-//   return encodeURI(`${url}?${sortQuery}${searchQuery}`);
-// };
-
-// const encodeUrl = ({ sortField, sortDirection }) => {
-//   let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
-//   return encodeURI(`${url}?${sortQuery}`);
-// };
-
 function App() {
-  // const [todos, setTodos] = useState([]); // List of todos
-  // const [isLoading, setIsLoading] = useState(false);
-  // const [isSaving, setIsSaving] = useState(false);
-  // const [errorMessage, setErrorMessage] = useState("");
-
   const [todoState, dispatch] = useReducer(todosReducer, initialTodosState);
   const [sortField, setSortField] = useState("createdTime");
   const [sortDirection, setSortDirection] = useState("desc");
   const [queryString, setQueryString] = useState("");
+  const location = useLocation();
+  const [title, setTitle] = useState("Todo List");
 
-  // const encodeUrl = ({ sortField, sortDirection, queryString }) => {
-  //   let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
-  //   let searchQuery = "";
-  //   if (queryString) {
-  //     searchQuery = `&filterByFormula=SEARCH("${queryString}",+title)`;
-  //   }
+  useEffect(() => {
+    if (location.pathname === "/") setTitle("Todo List");
+    else if (location.pathname === "/about") setTitle("About");
+    else setTitle("Not Found");
+  }, [location]);
 
   const encodeUrl = useCallback(() => {
     let sortQuery = `sort[0][field]=${sortField}&sort[0][direction]=${sortDirection}`;
@@ -50,38 +39,6 @@ function App() {
   }, [sortField, sortDirection, queryString]);
 
   // Load todos from Airtable
-  // useEffect(() => {
-  //   const fetchTodos = async () => {
-  //     setIsLoading(true);
-  //     setErrorMessage("");
-
-  //     try {
-  //       const resp = await fetch(encodeUrl(), {
-  //         method: "GET",
-  //         headers: { Authorization: token },
-  //       });
-  //       if (!resp.ok)
-  //         throw new Error(`Failed to fetch todos: ${resp.statusText}`);
-
-  //       const { records } = await resp.json();
-  //       const mappedTodos = records.map((record) => ({
-  //         id: record.id,
-  //         fields: {
-  //           title: record.fields?.title || "Untitled",
-  //           isCompleted: record.fields?.isCompleted || false,
-  //         },
-  //       }));
-
-  //       setTodos(mappedTodos);
-  //     } catch (error) {
-  //       setErrorMessage(error.message);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-
-  //   fetchTodos();
-  // }, [encodeUrl]);
 
   useEffect(() => {
     const fetchTodos = async () => {
@@ -101,49 +58,6 @@ function App() {
     };
     fetchTodos();
   }, [encodeUrl]);
-
-  // Add new todo
-  // const handleAddTodo = async (title) => {
-  //   if (!title.trim()) return;
-  //   setIsSaving(true);
-
-  //   const payload = {
-  //     records: [
-  //       {
-  //         fields: { title: title.trim(), isCompleted: false },
-  //       },
-  //     ],
-  //   };
-
-  //   const options = {
-  //     method: "POST",
-  //     headers: {
-  //       Authorization: token,
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify(payload),
-  //   };
-
-  //   try {
-  //     const resp = await fetch(url, options);
-  //     if (!resp.ok) throw new Error(`Failed to add todo: ${resp.statusText}`);
-
-  //     const { records } = await resp.json();
-  //     const mappedTodos = records.map((record) => ({
-  //       id: record.id,
-  //       fields: {
-  //         title: record.fields?.title || "Untitled",
-  //         isCompleted: record.fields?.isCompleted || false,
-  //       },
-  //     }));
-
-  //     setTodos((prevTodos) => [...prevTodos, ...mappedTodos]);
-  //   } catch (error) {
-  //     setErrorMessage(error.message);
-  //   } finally {
-  //     setIsSaving(false);
-  //   }
-  // };
 
   const handleAddTodo = async (title) => {
     if (!title.trim()) return;
@@ -176,52 +90,6 @@ function App() {
     }
   };
 
-  // // Update todo
-  // const updateTodo = async (editedTodo) => {
-  //   const originalTodo = todos.find((todo) => todo.id === editedTodo.id);
-  //   if (!originalTodo) return;
-
-  //   setTodos((prevTodos) =>
-  //     prevTodos.map((todo) =>
-  //       todo.id === editedTodo.id
-  //         ? { ...todo, fields: { ...todo.fields, ...editedTodo.fields } }
-  //         : todo
-  //     )
-  //   );
-
-  //   const payload = {
-  //     records: [
-  //       {
-  //         id: editedTodo.id,
-  //         fields: editedTodo.fields,
-  //       },
-  //     ],
-  //   };
-
-  //   const options = {
-  //     method: "PATCH",
-  //     headers: {
-  //       Authorization: token,
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify(payload),
-  //   };
-
-  //   try {
-  //     const resp = await fetch(url, options);
-  //     if (!resp.ok)
-  //       throw new Error(`Failed to update todo: ${resp.statusText}`);
-  //   } catch (error) {
-  //     console.error(error);
-  //     setErrorMessage(`${error.message}. Reverting todo...`);
-  //     setTodos((prevTodos) =>
-  //       prevTodos.map((todo) =>
-  //         todo.id === originalTodo.id ? originalTodo : todo
-  //       )
-  //     );
-  //   }
-  // };
-
   const updateTodo = async (editedTodo) => {
     const originalTodo = todoState.todoList.find((t) => t.id === editedTodo.id);
     if (!originalTodo) return;
@@ -240,55 +108,6 @@ function App() {
       dispatch({ type: "revertTodo", originalTodo });
     }
   };
-
-  // const handleCompleteTodo = async (id) => {
-  //   const todoToUpdate = todos.find((todo) => todo.id === id);
-  //   if (!todoToUpdate) return;
-
-  //   const originalTodo = { ...todoToUpdate };
-
-  //   const updatedTodo = {
-  //     ...todoToUpdate,
-  //     fields: {
-  //       ...todoToUpdate.fields,
-  //       isCompleted: !todoToUpdate.fields.isCompleted,
-  //     },
-  //   };
-
-  //   setTodos((prevTodos) =>
-  //     prevTodos.map((todo) => (todo.id === id ? updatedTodo : todo))
-  //   );
-
-  //   const payload = {
-  //     records: [
-  //       {
-  //         id: updatedTodo.id,
-  //         fields: updatedTodo.fields,
-  //       },
-  //     ],
-  //   };
-
-  //   const options = {
-  //     method: "PATCH",
-  //     headers: {
-  //       Authorization: token,
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify(payload),
-  //   };
-
-  //   try {
-  //     const resp = await fetch(url, options);
-  //     if (!resp.ok)
-  //       throw new Error(`Failed to update todo: ${resp.statusText}`);
-  //   } catch (error) {
-  //     console.error(error);
-  //     setErrorMessage(`${error.message}. Reverting todo...`);
-  //     setTodos((prevTodos) =>
-  //       prevTodos.map((todo) => (todo.id === id ? originalTodo : todo))
-  //     );
-  //   }
-  // };
 
   const handleCompleteTodo = async (id) => {
     const originalTodo = todoState.todoList.find((t) => t.id === id);
@@ -314,38 +133,32 @@ function App() {
       dispatch({ type: "revertTodo", originalTodo });
     }
   };
-
   return (
-    <div className={styles.appContainer}>
-      <TodoForm onAddTodo={handleAddTodo} isSaving={todoState.isSaving} />
-
-      <TodoList
-        todos={todoState.todoList.filter((todo) => !todo.fields.isCompleted)}
-        onCompleteTodo={handleCompleteTodo}
-        onUpdateTodo={updateTodo}
-        isLoading={todoState.isLoading}
-      />
-
-      <hr />
-
-      <TodosViewForm
-        sortField={sortField}
-        setSortField={setSortField}
-        sortDirection={sortDirection}
-        setSortDirection={setSortDirection}
-        queryString={queryString}
-        setQueryString={setQueryString}
-      />
-
-      {todoState.errorMessage && (
-        <div className={styles.errorMessage}>
-          <p>{todoState.errorMessage}</p>
-          <button onClick={() => dispatch({ type: "clearError" })}>
-            Dismiss
-          </button>
-        </div>
-      )}
-    </div>
+    <>
+      <Header title={title} />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <TodosPage
+              todoState={todoState}
+              handleAddTodo={handleAddTodo}
+              handleCompleteTodo={handleCompleteTodo}
+              updateTodo={updateTodo}
+              sortField={sortField}
+              setSortField={setSortField}
+              sortDirection={sortDirection}
+              setSortDirection={setSortDirection}
+              queryString={queryString}
+              setQueryString={setQueryString}
+              dispatch={dispatch}
+            />
+          }
+        />
+        <Route path="/about" element={<About />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </>
   );
 }
 
