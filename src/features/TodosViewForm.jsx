@@ -20,8 +20,6 @@ const StyledButton = styled.button`
   padding: 0.5rem;
 `;
 
-
-
 function TodosViewForm({
   sortField,
   setSortField,
@@ -60,18 +58,12 @@ function TodosViewForm({
           onChange={(e) => setLocalQueryString(e.target.value)}
         />
 
-        <StyledButton type="button" onClick={() => setQueryString("")}>
-
-        <button type="button" onClick={handleClear}>
-
+        <StyledButton type="button" onClick={handleClear}>
           Clear
         </StyledButton>
       </StyledDiv>
 
       <StyledDiv className="todos-view-form">
-
-      <div className="todos-view-form">
-
         <label htmlFor="sort-field">Sort by: </label>
         <select
           id="sort-field"

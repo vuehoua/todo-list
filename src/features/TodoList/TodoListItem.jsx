@@ -5,7 +5,7 @@ import styles from "./TodoListItem.module.css";
 
 function TodoListItem({ todo, onCompleteTodo, onUpdateTodo }) {
   const [isEditing, setIsEditing] = useState(false);
-  const [workingTitle, setWorkingTitle] = useState(todo.title);
+  const [workingTitle, setWorkingTitle] = useState(todo.fields.title);
 
   function handleEdit(event) {
     setWorkingTitle(event.target.value);
@@ -19,7 +19,10 @@ function TodoListItem({ todo, onCompleteTodo, onUpdateTodo }) {
   function handleUpdate(event) {
     if (!isEditing) return;
     event.preventDefault();
-    onUpdateTodo({ ...todo, title: workingTitle });
+    onUpdateTodo({
+      ...todo,
+      fields: { ...todo.fields, title: workingTitle },
+    });
     setIsEditing(false);
   }
 
