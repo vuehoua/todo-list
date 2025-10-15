@@ -1,0 +1,30 @@
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  padding: 1rem;
+}
+
+.title {
+  text-align: center;
+  margin: 0;
+}
+
+.nav {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.active {
+  color: gray;
+  text-decoration: underline;
+}
+
+.inactive {
+  color: black;
+  text-decoration: none;
+}
